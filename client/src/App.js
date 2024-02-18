@@ -12,22 +12,23 @@ import "react-clock/dist/Clock.css";
 import { useState } from "react";
 
 function App() {
-  // Hooks
+  // State variables using useState hook
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [eventName, setEventName] = useState("");
-
   const [eventDescription, setEventDescription] = useState("");
+
+  // Using Supabase authentication hooks to manage user session and client
   const session = useSession(); // Current active token is stored inside of the session. When a session exits, we have a user
   const supabase = useSupabaseClient(); // Access client
-  const { isLoading } = useSessionContext();
+  const { isLoading } = useSessionContext(); // Loading state for session context
 
-  // Handles "flickering" of app
+  // If session is loading, return nothing (prevents "flickering" of the app)
   if (isLoading) {
     return <></>;
   }
 
-  // Function to handle signing into Google
+  // Function to handle Google sign in
   async function googleSignIn() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -42,12 +43,12 @@ function App() {
     }
   }
 
-  // Function to handle signing out of Google
+  // Function to handle signing out
   async function signOut() {
     await supabase.auth.signOut();
   }
 
-  // Function to handle creating an event
+  // Function to handle creating an event on Google Calendar
   // Documentation: https://developers.google.com/calendar/api/v3/reference/events/insert
   async function createEvent() {
     console.log("Event created"); // Debugging
@@ -64,7 +65,7 @@ function App() {
       },
     };
 
-    // Fetch request
+    // Making a POST request to Google Calendar API to create event
     await fetch(
       "https://www.googleapis.com/calendar/v3/calendars/primary/events",
       {
@@ -91,6 +92,7 @@ function App() {
   console.log(eventName);
   console.log(eventDescription);
 
+  // Rendering UI based on session state
   return (
     <div className="App">
       <div style={{ width: "400px", margin: "30px auto" }}>
