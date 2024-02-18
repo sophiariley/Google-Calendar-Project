@@ -41,3 +41,4 @@ This React application facilitates the creation of events in Google Calendar usi
 
 ## TO-DO
 - Update UI
+- Create demonstration video
