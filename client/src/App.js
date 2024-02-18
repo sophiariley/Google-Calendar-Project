@@ -1,11 +1,28 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import {
+  useSession,
+  useSupabaseClient,
+  useSessionContext,
+} from "@supabase/auth-helpers-react";
+import DateTimePicker from "react-datetime-picker";
+import "react-datetime-picker/dist/DateTimePicker.css";
+import "react-calendar/dist/Calendar.css";
+import "react-clock/dist/Clock.css";
+import { useState } from "react";
 
 function App() {
   // Hooks
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const session = useSession(); // Current active token is stored inside of the session. When a session exits, we have a user
-  const client = useSupabaseClient(); // Access client
+  const supabase = useSupabaseClient(); // Access client
+  const { isLoading } = useSessionContext();
+
+  // Handles "flickering" of app
+  if (isLoading) {
+    return <></>;
+  }
 
   // Function to handle signing into Google
   async function googleSignIn() {
@@ -27,7 +44,10 @@ function App() {
     await supabase.auth.signOut();
   }
 
-  console.log(session); // Debugging
+  // Debugging:
+  console.log(session);
+  console.log(startDate);
+  console.log(endDate);
 
   return (
     <div className="App">
@@ -36,6 +56,10 @@ function App() {
         {session ? (
           <>
             <h2>Welcome back, {session.user.email}!</h2>
+            <p>Starts</p>
+            <DateTimePicker value={startDate} onChange={setStartDate} />
+            <p>Ends</p>
+            <DateTimePicker value={endDate} onChange={setEndDate} />
             <button onClick={() => signOut()}>Sign out</button>
           </>
         ) : (
